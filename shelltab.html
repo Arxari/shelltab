@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>~>new tab</title>
+        <style>
+            body,
+            html {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                background-color: #282c34;
+                color: #a3aab7;
+                font-family: monospace;
+            }
+            #terminal {
+                padding: 20px;
+                height: 100%;
+                box-sizing: border-box;
+                overflow-y: auto;
+            }
+            #input-line {
+                display: flex;
+                align-items: center;
+            }
+            #prompt {
+                color: #0f0;
+                margin-right: 5px;
+            }
+            #input {
+                background-color: transparent;
+                border: none;
+                color: #a3aab7;
+                font-family: monospace;
+                font-size: 16px;
+                flex-grow: 1;
+                outline: none;
+            }
+            #output {
+                white-space: pre-wrap;
+                margin-bottom: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="terminal">
+            <div id="output"></div>
+            <div id="input-line">
+                <span id="prompt">~></span>
+                <input type="text" id="input" autofocus />
+            </div>
+        </div>
+
+        <script>
+            const input = document.getElementById("input");
+            const output = document.getElementById("output");
+            const prompt = document.getElementById("prompt");
+            let bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || {};
+            let settings = JSON.parse(localStorage.getItem("settings")) || {
+                backgroundColor: "#282c34",
+                textColor: "#a3aab7",
+                promptText: "~>",
+                promptColor: "#0f0",
+            };
+
+            function applySettings() {
+                document.body.style.backgroundColor = settings.backgroundColor;
+                document.body.style.color = settings.textColor;
+                input.style.color = settings.textColor;
+                prompt.style.color = settings.promptColor;
+                prompt.textContent = settings.promptText;
+            }
+
+            applySettings();
+
+            input.addEventListener("keypress", function (e) {
+                if (e.key === "Enter") {
+                    const command = this.value.trim();
+                    output.innerHTML += `${settings.promptText} ${command}\n`;
+                    processCommand(command);
+                    this.value = "";
+                }
+            });
+
+            function processCommand(command) {
+                const [cmd, ...args] = command.split(" ");
+                switch (cmd) {
+                    case "add":
+                        if (args.length === 2) {
+                            addBookmark(args[0], args[1]);
+                        } else {
+                            output.innerHTML += "Usage: add <alias> <url>\n";
+                        }
+                        break;
+                    case "list":
+                        listBookmarks();
+                        break;
+                    case "remove":
+                        if (args.length === 1) {
+                            removeBookmark(args[0]);
+                        } else {
+                            output.innerHTML += "Usage: remove <alias>\n";
+                        }
+                        break;
+                    case "settings":
+                        if (args.length === 0) {
+                            showSettings();
+                        } else if (args.length === 2) {
+                            updateSetting(args[0], args[1]);
+                        } else {
+                            output.innerHTML +=
+                                "Usage: settings [option value]\n";
+                        }
+                        break;
+                    case "clear":
+                        clearOutput();
+                        break;
+                    case "help":
+                        showHelp();
+                        break;
+                    default:
+                        if (bookmarks[cmd]) {
+                            window.location.href = bookmarks[cmd];
+                        } else {
+                            output.innerHTML += `Command not found: ${cmd}\n`;
+                        }
+                }
+            }
+
+            function addBookmark(alias, url) {
+                bookmarks[alias] = url;
+                localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+                output.innerHTML += `Bookmark added: ${alias} -> ${url}\n`;
+            }
+
+            function listBookmarks() {
+                output.innerHTML += "Bookmarks:\n";
+                for (const [alias, url] of Object.entries(bookmarks)) {
+                    output.innerHTML += `${alias} -> ${url}\n`;
+                }
+            }
+
+            function removeBookmark(alias) {
+                if (bookmarks[alias]) {
+                    delete bookmarks[alias];
+                    localStorage.setItem(
+                        "bookmarks",
+                        JSON.stringify(bookmarks),
+                    );
+                    output.innerHTML += `Bookmark removed: ${alias}\n`;
+                } else {
+                    output.innerHTML += `Bookmark not found: ${alias}\n`;
+                }
+            }
+
+            function showSettings() {
+                output.innerHTML += "Current settings:\n";
+                for (const [key, value] of Object.entries(settings)) {
+                    output.innerHTML += `${key}: ${value}\n`;
+                }
+            }
+
+            function updateSetting(option, value) {
+                if (option in settings) {
+                    settings[option] = value;
+                    localStorage.setItem("settings", JSON.stringify(settings));
+                    applySettings();
+                    output.innerHTML += `Setting updated: ${option} -> ${value}\n`;
+                } else {
+                    output.innerHTML += `Invalid setting: ${option}\n`;
+                }
+            }
+
+            function clearOutput() {
+                output.innerHTML = "";
+            }
+
+            function showHelp() {
+                output.innerHTML += "Available commands:\n";
+                output.innerHTML += "add <alias> <url> - Add a new bookmark\n";
+                output.innerHTML += "list - List all bookmarks\n";
+                output.innerHTML += "remove <alias> - Remove a bookmark\n";
+                output.innerHTML += "settings - Show or update settings\n";
+                output.innerHTML += "clear - Clear the terminal screen\n";
+                output.innerHTML += "help - Show this help message\n";
+            }
+        </script>
+    </body>
+</html>
