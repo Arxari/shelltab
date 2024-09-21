@@ -41,6 +41,20 @@
                 white-space: pre-wrap;
                 margin-bottom: 10px;
             }
+            .neofetch {
+                display: flex;
+            }
+            .logo {
+                display: inline-block;
+                margin-right: 10px;
+            }
+            .info {
+                display: inline-block;
+                vertical-align: top;
+            }
+            pre {
+                margin: 0;
+            }
         </style>
     </head>
     <body>
@@ -62,6 +76,7 @@
                 textColor: "#a3aab7",
                 promptText: "~>",
                 promptColor: "#0f0",
+                searchEngine: "https://duckduckgo.com/?q=",
             };
 
             function applySettings() {
@@ -118,6 +133,16 @@
                         break;
                     case "help":
                         showHelp();
+                        break;
+                    case "neofetch":
+                        showNeofetch();
+                        break;
+                    case "search":
+                        if (args.length > 0) {
+                            performSearch(args.join(" "));
+                        } else {
+                            output.innerHTML += "Usage: search <query>\n";
+                        }
                         break;
                     default:
                         if (bookmarks[cmd]) {
@@ -183,7 +208,86 @@
                 output.innerHTML += "remove <alias> - Remove a bookmark\n";
                 output.innerHTML += "settings - Show or update settings\n";
                 output.innerHTML += "clear - Clear the terminal screen\n";
+                output.innerHTML +=
+                    "neofetch - Show browser info in neofetch style\n";
+                output.innerHTML += "search <query> - Perform a web search\n";
                 output.innerHTML += "help - Show this help message\n";
+            }
+
+            function showNeofetch() {
+                const browserInfo = getBrowserInfo();
+                const firefoxLogo = `
+
+
+                   ==
+                  =====
+         ==  =   ======= =
+        ======       ======
+       ==========    =======
+       =======        ======
+       ======         ======
+        ======       ======
+         =================
+          ===============
+             =========
+
+
+                `;
+                const infoText = `
+${browserInfo.name} ${browserInfo.version}
+Platform: ${browserInfo.platform}
+User Agent: ${browserInfo.userAgent}
+Language: ${browserInfo.language}
+                `;
+
+                output.innerHTML += `
+<div class="neofetch">
+    <div class="logo"><pre>${firefoxLogo}</pre></div>
+    <div class="info"><pre>${infoText}</pre></div>
+</div>
+                `;
+            }
+
+            function getBrowserInfo() {
+                const userAgent = navigator.userAgent;
+                const platform = navigator.platform;
+                const language = navigator.language;
+                let browserName = "Unknown";
+                let version = "Unknown";
+
+                if (userAgent.indexOf("Chrome") > -1) {
+                    browserName = "Chrome";
+                    version = userAgent.match(/Chrome\/([0-9.]+)/)[1];
+                } else if (userAgent.indexOf("Firefox") > -1) {
+                    browserName = "Firefox";
+                    version = userAgent.match(/Firefox\/([0-9.]+)/)[1];
+                } else if (
+                    userAgent.indexOf("Safari") > -1 &&
+                    userAgent.indexOf("Chrome") === -1
+                ) {
+                    browserName = "Safari";
+                    version = userAgent.match(/Version\/([0-9.]+)/)[1];
+                } else if (userAgent.indexOf("Edge") > -1) {
+                    browserName = "Edge";
+                    version = userAgent.match(/Edg\/([0-9.]+)/)[1];
+                } else if (userAgent.indexOf("Opera") > -1) {
+                    browserName = "Opera";
+                    version = userAgent.match(/Opera\/([0-9.]+)/)[1];
+                }
+
+                return {
+                    name: browserName,
+                    version: version,
+                    platform: platform,
+                    userAgent: userAgent,
+                    language: language,
+                };
+            }
+
+            function performSearch(query) {
+                const searchUrl =
+                    settings.searchEngine + encodeURIComponent(query);
+                window.location.href = searchUrl;
             }
         </script>
     </body>

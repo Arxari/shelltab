@@ -2,7 +2,7 @@
 Shelltab gives you a new tab that can look just like your shell and it doubles as a bookmark manager (trough an alias-like system) and search bar!
 
 ##### How to use?
-You can either set this github page as your new tab or fork the repo and host your own GH page, all configs are stored locally in your browser cache
+~~You can either set this github page as your new tab or fork the repo and host your own GH page, all configs are stored locally in your browser cache~~
 
 You can also use [New Tab Overide](https://addons.mozilla.org/en-US/firefox/addon/new-tab-override/)
 After you downloaded the extension, download the shelltab.html, then open the extension settings of the new tab override, select 'local file' as option and put in the sheltab.html
