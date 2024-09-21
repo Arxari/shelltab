@@ -8,6 +8,8 @@ If you want to do it fully locally, you can download the index.html and use the 
 ###### Pro tip
 In the New Tab Override settings click the checkbox next to "Set focus to the web page instead of the address bar"
 
+![image](https://github.com/user-attachments/assets/c6e283ef-9639-4d5d-9db3-80ae47d3544e)
+
 ##### Command list
 
 Command | Description
