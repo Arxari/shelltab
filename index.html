@@ -43,6 +43,7 @@
             }
             .neofetch {
                 display: flex;
+                margin-bottom: 10px;
             }
             .logo {
                 display: inline-block;
@@ -217,35 +218,34 @@
             function showNeofetch() {
                 const browserInfo = getBrowserInfo();
                 const firefoxLogo = `
+                  ==
+                 =====
+        ==  =   ======= =
+       ======       ======
+      ==========    =======
+      =======        ======
+      ======         ======
+       ======       ======
+        =================
+         ===============
+            =========
 
 
-                   ==
-                  =====
-         ==  =   ======= =
-        ======       ======
-       ==========    =======
-       =======        ======
-       ======         ======
-        ======       ======
-         =================
-          ===============
-             =========
-
-
-                `;
+               `;
                 const infoText = `
 ${browserInfo.name} ${browserInfo.version}
 Platform: ${browserInfo.platform}
 User Agent: ${browserInfo.userAgent}
 Language: ${browserInfo.language}
-                `;
+               `;
 
-                output.innerHTML += `
-<div class="neofetch">
-    <div class="logo"><pre>${firefoxLogo}</pre></div>
-    <div class="info"><pre>${infoText}</pre></div>
-</div>
-                `;
+                const neofetchOutput = document.createElement("div");
+                neofetchOutput.className = "neofetch";
+                neofetchOutput.innerHTML = `
+<div class="logo"><pre>${firefoxLogo}</pre></div>
+<div class="info"><pre>${infoText}</pre></div>
+`;
+                output.appendChild(neofetchOutput);
             }
 
             function getBrowserInfo() {
