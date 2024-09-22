@@ -72,12 +72,17 @@
             const output = document.getElementById("output");
             const prompt = document.getElementById("prompt");
             let bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || {};
-            let settings = JSON.parse(localStorage.getItem("settings")) || {
+
+            const defaultSettings = {
                 backgroundColor: "#282c34",
                 textColor: "#a3aab7",
                 promptText: "~>",
-                promptColor: "#0f0",
+                promptColor: "#91ba75",
                 searchEngine: "https://duckduckgo.com/?q=",
+            };
+
+            let settings = JSON.parse(localStorage.getItem("settings")) || {
+                ...defaultSettings,
             };
 
             function applySettings() {
@@ -124,9 +129,11 @@
                             showSettings();
                         } else if (args.length === 2) {
                             updateSetting(args[0], args[1]);
+                        } else if (args.length === 1 && args[0] === "reset") {
+                            resetSettings();
                         } else {
                             output.innerHTML +=
-                                "Usage: settings [option value]\n";
+                                "Usage: settings [option value] or settings reset\n";
                         }
                         break;
                     case "clear":
@@ -152,6 +159,14 @@
                             output.innerHTML += `Command not found: ${cmd}\n`;
                         }
                 }
+            }
+
+            function resetSettings() {
+                settings = { ...defaultSettings };
+                localStorage.setItem("settings", JSON.stringify(settings));
+                applySettings();
+                output.innerHTML +=
+                    "Settings have been reset to default values.\n";
             }
 
             function addBookmark(alias, url) {
@@ -207,7 +222,11 @@
                 output.innerHTML += "add <alias> <url> - Add a new bookmark\n";
                 output.innerHTML += "list - List all bookmarks\n";
                 output.innerHTML += "remove <alias> - Remove a bookmark\n";
-                output.innerHTML += "settings - Show or update settings\n";
+                output.innerHTML += "settings - Show current settings\n";
+                output.innerHTML +=
+                    "settings <option> <value> - Update a setting\n";
+                output.innerHTML +=
+                    "settings reset - Reset settings to default values\n";
                 output.innerHTML += "clear - Clear the terminal screen\n";
                 output.innerHTML +=
                     "neofetch - Show browser info in neofetch style\n";
