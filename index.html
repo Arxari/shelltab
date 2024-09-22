@@ -79,6 +79,7 @@
                 promptText: "~>",
                 promptColor: "#91ba75",
                 searchEngine: "https://duckduckgo.com/?q=",
+                autoSearch: true, 
             };
 
             let settings = JSON.parse(localStorage.getItem("settings")) || {
@@ -155,6 +156,8 @@
                     default:
                         if (bookmarks[cmd]) {
                             window.location.href = bookmarks[cmd];
+                        } else if (settings.autoSearch) {
+                            performSearch(command);
                         } else {
                             output.innerHTML += `Command not found: ${cmd}\n`;
                         }
@@ -204,10 +207,14 @@
 
             function updateSetting(option, value) {
                 if (option in settings) {
-                    settings[option] = value;
+                    if (option === "autoSearch") {
+                        settings[option] = value.toLowerCase() === "true";
+                    } else {
+                        settings[option] = value;
+                    }
                     localStorage.setItem("settings", JSON.stringify(settings));
                     applySettings();
-                    output.innerHTML += `Setting updated: ${option} -> ${value}\n`;
+                    output.innerHTML += `Setting updated: ${option} -> ${settings[option]}\n`;
                 } else {
                     output.innerHTML += `Invalid setting: ${option}\n`;
                 }
@@ -229,75 +236,6 @@
                 output.innerHTML += "neofetch - Show browser info in neofetch style\n";
                 output.innerHTML += "search texthere - Perform a web search\n";
                 output.innerHTML += "help - Show this help message\n";
-            }
-
-            function showNeofetch() {
-                const browserInfo = getBrowserInfo();
-                const firefoxLogo = `
-                  ==
-                 =====
-        ==  =   ======= =
-       ======       ======
-      ==========    =======
-      =======        ======
-      ======         ======
-       ======       ======
-        =================
-         ===============
-            =========
-
-
-               `;
-                const infoText = `
-${browserInfo.name} ${browserInfo.version}
-Platform: ${browserInfo.platform}
-User Agent: ${browserInfo.userAgent}
-Language: ${browserInfo.language}
-               `;
-
-                const neofetchOutput = document.createElement("div");
-                neofetchOutput.className = "neofetch";
-                neofetchOutput.innerHTML = `
-<div class="logo"><pre>${firefoxLogo}</pre></div>
-<div class="info"><pre>${infoText}</pre></div>
-`;
-                output.appendChild(neofetchOutput);
-            }
-
-            function getBrowserInfo() {
-                const userAgent = navigator.userAgent;
-                const platform = navigator.platform;
-                const language = navigator.language;
-                let browserName = "Unknown";
-                let version = "Unknown";
-
-                if (userAgent.indexOf("Chrome") > -1) {
-                    browserName = "Chrome";
-                    version = userAgent.match(/Chrome\/([0-9.]+)/)[1];
-                } else if (userAgent.indexOf("Firefox") > -1) {
-                    browserName = "Firefox";
-                    version = userAgent.match(/Firefox\/([0-9.]+)/)[1];
-                } else if (
-                    userAgent.indexOf("Safari") > -1 &&
-                    userAgent.indexOf("Chrome") === -1
-                ) {
-                    browserName = "Safari";
-                    version = userAgent.match(/Version\/([0-9.]+)/)[1];
-                } else if (userAgent.indexOf("Edge") > -1) {
-                    browserName = "Edge";
-                    version = userAgent.match(/Edg\/([0-9.]+)/)[1];
-                } else if (userAgent.indexOf("Opera") > -1) {
-                    browserName = "Opera";
-                    version = userAgent.match(/Opera\/([0-9.]+)/)[1];
-                }
-
-                return {
-                    name: browserName,
-                    version: version,
-                    platform: platform,
-                    userAgent: userAgent,
-                    language: language,
-                };
             }
 
             function performSearch(query) {
