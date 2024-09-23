@@ -79,7 +79,7 @@
                 promptText: "~>",
                 promptColor: "#91ba75",
                 searchEngine: "https://duckduckgo.com/?q=",
-                autoSearch: true, 
+                autoSearch: true,
             };
 
             let settings = JSON.parse(localStorage.getItem("settings")) || {
@@ -151,6 +151,13 @@
                             performSearch(args.join(" "));
                         } else {
                             output.innerHTML += "Usage: search <query>\n";
+                        }
+                        break;
+                    case "goto":
+                        if (args.length > 0) {
+                            gotoUrl(args.join(" "));
+                        } else {
+                            output.innerHTML += "Usage: goto <url>\n";
                         }
                         break;
                     default:
@@ -235,6 +242,7 @@
                 output.innerHTML += "clear - Clear the terminal screen\n";
                 output.innerHTML += "neofetch - Show browser info in neofetch style\n";
                 output.innerHTML += "search texthere - Perform a web search\n";
+                output.innerHTML += "goto url - Navigate directly to a URL\n";
                 output.innerHTML += "help - Show this help message\n";
             }
 
@@ -242,6 +250,13 @@
                 const searchUrl =
                     settings.searchEngine + encodeURIComponent(query);
                 window.location.href = searchUrl;
+            }
+
+            function gotoUrl(url) {
+                if (!/^https?:\/\//i.test(url)) {
+                    url = "https://" + url;
+                }
+                window.location.href = url;
             }
         </script>
     </body>
