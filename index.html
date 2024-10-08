@@ -125,6 +125,21 @@
                             output.innerHTML += "Usage: remove <alias>\n";
                         }
                         break;
+                    case "edit":
+                        if (args.length === 2) {
+                            editBookmark(args[0], args[1]);
+                        } else {
+                            output.innerHTML +=
+                                "Usage: edit <alias> <new_url>\n";
+                        }
+                        break;
+                    case "delete":
+                        if (args.length === 1) {
+                            deleteBookmark(args[0]);
+                        } else {
+                            output.innerHTML += "Usage: delete <alias>\n";
+                        }
+                        break;
                     case "settings":
                         if (args.length === 0) {
                             showSettings();
@@ -205,6 +220,32 @@
                 }
             }
 
+            function editBookmark(alias, newUrl) {
+                if (bookmarks[alias]) {
+                    bookmarks[alias] = newUrl;
+                    localStorage.setItem(
+                        "bookmarks",
+                        JSON.stringify(bookmarks),
+                    );
+                    output.innerHTML += `Bookmark updated: ${alias} -> ${newUrl}\n`;
+                } else {
+                    output.innerHTML += `Bookmark not found: ${alias}\n`;
+                }
+            }
+
+            function deleteBookmark(alias) {
+                if (bookmarks[alias]) {
+                    delete bookmarks[alias];
+                    localStorage.setItem(
+                        "bookmarks",
+                        JSON.stringify(bookmarks),
+                    );
+                    output.innerHTML += `Bookmark deleted: ${alias}\n`;
+                } else {
+                    output.innerHTML += `Bookmark not found: ${alias}\n`;
+                }
+            }
+
             function showSettings() {
                 output.innerHTML += "Current settings:\n";
                 for (const [key, value] of Object.entries(settings)) {
@@ -233,16 +274,27 @@
 
             function showHelp() {
                 output.innerHTML += "Available commands:\n";
-                output.innerHTML += "add aliasname url - Add a new bookmark\n";
+                output.innerHTML +=
+                    "add &lt;alias&gt; &lt;url&gt; - Add a new bookmark\n";
                 output.innerHTML += "list - List all bookmarks\n";
-                output.innerHTML += "remove aliasname - Remove a bookmark\n";
+                output.innerHTML +=
+                    "remove &lt;alias&gt; - Remove a bookmark\n";
+                output.innerHTML +=
+                    "edit &lt;alias&gt; &lt;new_url&gt; - Edit an existing bookmark\n";
+                output.innerHTML +=
+                    "delete &lt;alias&gt; - Delete a bookmark\n";
                 output.innerHTML += "settings - Show current settings\n";
-                output.innerHTML += "settings option value - Update a setting\n";
-                output.innerHTML += "settings reset - Reset settings to default values\n";
+                output.innerHTML +=
+                    "settings &lt;option&gt; &lt;value&gt; - Update a setting\n";
+                output.innerHTML +=
+                    "settings reset - Reset settings to default values\n";
                 output.innerHTML += "clear - Clear the terminal screen\n";
-                output.innerHTML += "neofetch - Show browser info in neofetch style\n";
-                output.innerHTML += "search texthere - Perform a web search\n";
-                output.innerHTML += "goto url - Navigate directly to a URL\n";
+                output.innerHTML +=
+                    "neofetch - Show browser info in neofetch style\n";
+                output.innerHTML +=
+                    "search &lt;query&gt; - Perform a web search\n";
+                output.innerHTML +=
+                    "goto &lt;url&gt; - Navigate directly to a URL\n";
                 output.innerHTML += "help - Show this help message\n";
             }
 
@@ -257,6 +309,12 @@
                     url = "https://" + url;
                 }
                 window.location.href = url;
+            }
+
+            function showNeofetch() {
+                // solution for time being
+                output.innerHTML +=
+                    "Neofetch information will be displayed here.\n";
             }
         </script>
     </body>
